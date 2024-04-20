@@ -1,0 +1,112 @@
+#!/bin/bash
+#bootstrab.lib
+#
+# Derechos de Autor (C) [2024] [Mauro Rosero P. <mauro@roser.one>]
+#
+# Este programa es software libre: usted puede redistribuirlo y/o modificarlo
+# bajo los términos de la Licencia Pública Affero General de GNU tal como
+# lo publica la Free Software Foundation, ya sea la versión 3 de la licencia,
+# o (a su elección) cualquier versión posterior.
+#
+# Este programa se distribuye con la esperanza de que sea útil,
+# pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de
+# COMERCIABILIDAD o IDONEIDAD PARA UN PROPÓSITO PARTICULAR. Consulte la
+# Licencia Pública Affero General de GNU para obtener más detalles.
+#
+# Debería haber recibido una copia de la Licencia Pública Affero General
+# junto con este programa. Si no la recibió, consulte <https://www.gnu.org/licenses/>.
+
+# Función para verificar si un gestor de contenedores está instalado
+check_container() {
+    # Verificar si Docker está instalado
+    if command -v docker &> /dev/null; then
+        return 0
+    fi
+    # Verificar si Podman está instalado
+    if command -v podman &> /dev/null; then
+        return 0
+    fi
+
+    # Ninguno de los dos está instalado
+    return 1
+}
+
+# Función para instalar o actualizar Python a la última versión
+install_or_update_python() {
+    check_container
+    retorno=$?
+    if [ ${retorno} -eq 1 ]
+    then
+        containerd=podman
+    fi
+
+    echo "${pymsg_001}"
+    if [ "$(uname)" == "Darwin" ]; then
+        # En macOS, instalamos o actualizamos Python a través de Homebrew
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        brew install python
+    elif [ -f /etc/debian_version ] || [ -f /etc/os-release ]; then
+        # En sistemas Debian y derivados, instalamos o actualizamos Python a través de apt
+        apt update
+        apt install -y python3
+    elif [ -f /etc/redhat-release ]; then
+        # En sistemas Red Hat, instalamos o actualizamos Python a través de yum
+        yum install -y python3
+    elif [ -f /etc/arch-release ]; then
+        # En Arch Linux, instalamos o actualizamos Python a través de pacman
+        pacman -Sy --noconfirm python
+    elif [ -f /etc/rc.conf ]; then
+        # En BSD, instalamos o actualizamos Python a través de pkg
+        pkg install -y python3
+    else
+        echo "${pymsg_002}"
+        exit 1
+    fi
+    echo "${pymsg_003}"
+}
+
+# Función para instalar Ansible utilizando pip en sistemas Debian y derivados
+install_ansible_debian() {
+    echo "${pymsg_004}"
+    apt update
+    apt install -y python3-pip dialog gettext ${containerd}
+    pip3 install ansible
+    python3 -m pip install --upgrade pip
+    echo "${pymsg_005}"
+}
+
+# Función para instalar Ansible utilizando pip en sistemas Red Hat
+install_ansible_redhat() {
+    echo "${pymsg_006}"
+    yum install -y python3-pip dialog gettext ${containerd}
+    pip3 install ansible
+    python3 -m pip install --upgrade pip
+    echo "${pymsg_007}"
+}
+
+# Función para instalar Ansible utilizando pip en macOS
+install_ansible_macos() {
+    echo "${pymsg_008}"
+    brew install dialog gettext ${containerd}
+    pip3 install ansible
+    python3 -m pip install --upgrade pip
+    echo "${pymsg_009}"
+}
+
+# Función para instalar Ansible utilizando pip en Arch Linux
+install_ansible_arch() {
+    echo "${pymsg_010}"
+    pacman -Sy --noconfirm python-pip dialog gettext ${containerd}
+    pip install ansible
+    python3 -m pip install --upgrade pip
+    echo "${pymsg_011}"
+}
+
+# Función para instalar Ansible utilizando pip en BSD
+install_ansible_bsd() {
+    echo "${pymsg_012}"
+    pkg install -y py38-pip dialog gettext ${containerd}
+    pip3 install ansible
+    python3 -m pip install --upgrade pip
+    echo "${pymsg_013}"
+}

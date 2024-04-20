@@ -1,0 +1,6 @@
+curl
+lsof
+wget
+unzip
+jq
+dialog

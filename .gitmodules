@@ -1,0 +1,19 @@
+[submodule "apps/l10n_cr"]
+	path = apps/l10n_cr
+	url = https://github.com/odoocr/l10n_cr.git
+	branch = 15.0
+[submodule "apps/cabys"]
+	path = apps/cabys
+	url = https://github.com/odoocr/cabys.git
+	branch = 15.0
+[submodule "apps/l10nca_currency"]
+	path = apps/l10nca_currency
+	url = git@github.com:maurorosero/l10nca_currency.git
+	branch = 17devs
+[submodule "apps/l10ncr_cabys"]
+	path = apps/l10ncr_cabys
+	url = https://github.com/odoocr/cabys.git
+	branch = 15.0
+[submodule "apps/l10ncr_fe"]
+	path = apps/l10ncr_fe
+	url = https://github.com/odoocr/l10n_cr.git

@@ -1,0 +1,4 @@
+[
+["odoo_version", "inputbox", "Versión Odoo", "Indique el número de la versión de Odoo a utilizar", [], [], 0, 0],
+["odoo_port", "inputbox", "Puerto Odoo", "Indique el número de puerto a desplegar la instancia de Odoo", [], [], 0, 0]
+]

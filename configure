@@ -1,0 +1,142 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+__author__     = "Mauro Rosero P."
+__project__    = "ODOO DEVS CONFIG"
+__program__    = "Configuración del Proyecto"
+__copyright__  = "Copyright 2023, PANAMATECH"
+__credits__    = ["Mauro Rosero P."]
+__license__    = "AGPL3"
+__version__    = "3.0.5.23"
+__released__   = 20/4/2024
+__maintainer__ = "Mauro Rosero P."
+__email__      = "mauro@rosero.one"
+__status__     = "Production"
+
+import sys, os
+import secrets, string
+
+from datetime import datetime
+from jinja2 import Environment, FileSystemLoader
+
+#from capture.validate import Validate
+from capture.capture import Capture
+
+### GLOBAL DATA DEFINITION
+M_ERROR="ERROR!"
+M_WARNING="ADVERTENCIA"
+M_INFO="INFORMACIÓN"
+
+CONFIG_PATH="./config/"
+CONFIG_SUFIX=".dev"
+CONFIG_FILE=".env"
+TEMPLATE_PATH="./docs/"
+TEMPLATE_SUFIX=".j2"
+TEMPLATE_FILE="devs"
+PROMPTS_SUFIX=".ask"
+PROMPTS_FILE="setup"
+PROJECT_FILE="project.name"
+
+### READ PROJECT NAME FILE
+def read_project(project ):
+    # Check if project file exists
+    if not os.path.exists(project):
+        return None, f"Error: El archivo '{project}' no existe."
+
+    # Check for read access
+    if not os.access(project, os.R_OK):
+        return None, f"Error: No tienes permisos de lectura para el archivo '{project}'."
+
+    # Read project file
+    with open(project, 'r') as f_project:
+        content = f_project.read().strip()
+
+    # Check for no spaces and only one word
+    if ' ' in content:
+        return None, f"Error: El archivo '{project}' contiene más de una palabra."
+
+    # Devolver el contenido del archivo
+    return content, None
+
+def check_template(template):
+    # Check if project file exists
+    if not os.path.exists(template):
+        return False, f"Error: El archivo '{template}' no existe."
+
+    # Check for read access
+    if not os.access(template, os.R_OK):
+        return False, f"Error: No tienes permisos de lectura para el archivo '{template}'."
+
+    return True, None
+
+### RENDER DEVS CONFIGURATION FILE
+def render_installer(template, p_file, project, responses):
+    content=template.render(
+        date_today=datetime.now().strftime("%Y-%m-%d-%H:%M:%S"),
+        date_year=datetime.now().strftime("%Y"),
+        project=project,
+        odoo_ver=responses['odoo_version'][0],
+        odoo_port=responses['odoo_port'][0]
+    )
+    with open(p_file, 'w',  encoding="utf-8") as f:
+        try:
+            f.write(content)
+            return True, None
+        except ValueError as e:
+            return False, str(e)
+
+### MAIN FUNCTION PROGRAM
+def main():
+
+    # Set capture window
+    w = Capture()
+    w.mtitle = __program__
+    mw = w.build_window()
+
+    # Get project id
+    PROJECT, installer_msg = read_project(CONFIG_PATH + PROJECT_FILE)
+    if installer_msg is not None:
+        mw.msgbox(f"PROJECT " + M_ERROR + f":\n{installer_msg}")
+        return 3
+
+    if PROJECT is None:
+        mw.msgbox(f"PROJECT " + M_ERROR + f":\nEl archivo de configuración del proyecto está en blanco")
+        return 2
+
+    # Get Prompts to controller
+    w.prompt_file = CONFIG_PATH + PROMPTS_FILE + PROMPTS_SUFIX
+    prompts_info, prompts_msg = w.read_prompts()
+    if prompts_info == None:
+        mw.msgbox(f"PROMPT " + M_ERROR + f":\n{prompts_msg}")
+        return 4
+
+    # Check for template file
+    CONFIG_TEMPLATE = TEMPLATE_PATH + TEMPLATE_FILE + TEMPLATE_SUFIX
+    template_ok, installer_msg = check_template(CONFIG_TEMPLATE)
+    if not template_ok:
+        mw.msgbox(f"PROMPT " + M_ERROR + f":\n{installer_msg}")
+        return 5
+
+    # Set main window form
+    exit, RESPONSES=w.go_capture(mw)
+
+    # Cancelled by user
+    if exit:
+        mw.msgbox(M_INFO + f":\nEjecución de programa fue cancelada por el operador!")
+        return 1
+
+    # Set devs configuration environment file by template
+    CONFIG_SETUP = CONFIG_PATH + CONFIG_FILE  + CONFIG_SUFIX
+    environment = Environment(loader=FileSystemLoader(TEMPLATE_PATH))
+    SETUP_TEMPLATE = environment.get_template(TEMPLATE_FILE + TEMPLATE_SUFIX)
+    installer_ok, installer_msg = render_installer( SETUP_TEMPLATE, CONFIG_SETUP, PROJECT, RESPONSES )
+    if not installer_ok:
+        mw.msgbox(M_ERROR + f":\n{installer_msg}")
+        return 255
+
+    # End of main routine
+    return 0
+
+### EXECUTE MAIN PROGRAM
+if __name__ == '__main__':
+    sys.exit(main())

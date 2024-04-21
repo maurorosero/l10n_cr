@@ -1,0 +1,20 @@
+# Ultima actualización: {{ date_today }}
+POSTGRES_VERSION=15
+POSTGRES_USER=${USER}
+POSTGRES_PASS=odoo.DBA{{ date_year }}
+POSTGRES_PATH=./db/v{{ odoo_ver }}/{{ project }}/pg
+POSTGRES_INIT=./db/v{{ odoo_ver }}/{{ project }}/init
+ODOO_PROJECT={{ project }}
+ODOO_VERSION={{ odoo_ver }}
+ODOO_PORT=101{{ odoo_port }}
+ODOO_CHAT=201{{ odoo_port }}
+ODOO_BACKUPS=./backups/v{{ odoo_ver }}/{{ project }}
+ODOO_APPS=./apps
+ODOO_ETC=./etc
+ODOO_DATA=./db/v{{ odoo_ver }}/{{ project }}/data
+ODOO_DATABASE=./db/v{{ odoo_ver }}/{{ project }}
+ODOO_MASTER={{ project }}_{{ date_year }}
+ODOO_WEB=./web
+ODOO_UID=${UID}
+ODOO_SUDO=y
+POSTGRES_UID=${UID}

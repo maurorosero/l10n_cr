@@ -17,33 +17,28 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 #  
-#  
-echo "Odoo Developers Instance Startup"
-echo "==========================================" 
-GID=$(id -g)
-export UID
-export GID=$(id -g)
-export ODOO_GID=$(id -g)
-export POSTGRES_GID=$(id -g)
-source ./config/.env.dev
-if [[ ! -f "${POSTGRES_PATH}" ]]
+#
+
+display_header() {
+  clear
+  echo "$(cat < ./config/project.head) Startup"
+  echo "=========================================="
+}
+
+devs_config='./config/.env.dev'
+if [ -f ${devs_config} ]
 then
-   mkdir -p "${POSTGRES_PATH}"
+  source ${devs_config}
+else
+  display_header
+  echo "Requiere ejecutar ./configure primero, previo a iniciar la instancia!"
+  exit 9
 fi
 
-if [[ ! -f "${POSTGRES_INIT}" ]]
-then
-   mkdir -p "${POSTGRES_INIT}" 
-fi
+source ./bin/lib/containers.lib
+source ./bin/lib/odoo.lib
 
-if [[ ! -f "${ODOO_DATA}" ]]
-then
-   mkdir -p "${ODOO_DATA}"
-fi
-
-if [[ ! -f "${ODOO_BACKUPS}" ]]
-then
-   mkdir -p "${ODOO_BACKUPS}"
-fi
-
-docker-compose --env-file ./config/.env.dev up -d
+# MAIN PROGRAM
+display_header
+odoo_structure
+start_instance "${devs_config}"

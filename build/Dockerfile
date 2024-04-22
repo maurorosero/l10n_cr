@@ -1,4 +1,5 @@
-FROM odoo:17
+ARG BASE_IMAGE
+FROM $BASE_IMAGE
 USER root
 
 RUN apt-get update && apt upgrade -y

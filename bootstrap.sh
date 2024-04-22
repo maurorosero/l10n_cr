@@ -16,6 +16,12 @@
 # Debería haber recibido una copia de la Licencia Pública Affero General
 # junto con este programa. Si no la recibió, consulte <https://www.gnu.org/licenses/>.
 
+display_header() {
+  clear
+  echo "$(cat < ./config/project.head) Developer Bootstrap"
+  echo "=================================================="
+}
+
 install() {
 	local install_home=$1
 
@@ -61,6 +67,5 @@ else
 	source "${HOME}/bin/msg/head.es"
 fi
 
-echo "${head_000}"
-echo "------------------------------------------------------------------------------"
+display_header
 sudo bash -c "$(declare -f install); install ${PWD}"

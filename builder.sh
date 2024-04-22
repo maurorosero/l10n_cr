@@ -16,6 +16,12 @@
 # Debería haber recibido una copia de la Licencia Pública Affero General
 # junto con este programa. Si no la recibió, consulte <https://www.gnu.org/licenses/>.
 
+display_header() {
+  clear
+  echo "$(cat < ./config/project.head) Container Builder"
+  echo "=================================================="
+}
+
 show_message() {
   local msg = $1
   # Verificar si dialog está instalado
@@ -29,7 +35,7 @@ show_message() {
 }
 
 docker_build() {
-  docker build  ./build -t odoo:devs${ODOO_VERSION}
+  docker build  ./build -t odoo:devs_${ODOO_VERSION} --build-arg BASE_IMAGE=odoo:${ODOO_VERSION}
 }
 
 podman_build() {
@@ -39,7 +45,7 @@ podman_build() {
     mkdir ${registry_path}
   fi
   echo 'unqualified-search-registries = ["docker.io"]' > "${registry_path}/registries.conf"
-  podman build  ./build -t odoo:devs${ODOO_VERSION}
+  podman build  ./build -t odoo:devs_${ODOO_VERSION} --build-arg BASE_IMAGE=odoo:${ODOO_VERSION}
 }
 
 build_execute() {
@@ -60,7 +66,5 @@ build_execute() {
   fi
 }
 
-clear
-echo "Odoo SaaS v${ODOO_VERSION} Builder Container"
-echo "============================================"
+display_header
 build_execute

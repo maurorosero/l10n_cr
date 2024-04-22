@@ -37,7 +37,8 @@ install_or_update_python() {
     retorno=$?
     if [ ${retorno} -eq 1 ]
     then
-        containerd=podman
+        containerd="podman"
+        python_podman="sudo pip3 install podman-compose"
     fi
 
     echo "${pymsg_001}"
@@ -70,8 +71,8 @@ install_ansible_debian() {
     echo "${pymsg_004}"
     apt update
     apt install -y python3-pip dialog gettext ${containerd}
-    pip3 install ansible
     python3 -m pip install --upgrade pip
+    pip3 install ansible ${python_podman}
     echo "${pymsg_005}"
 }
 
@@ -79,8 +80,8 @@ install_ansible_debian() {
 install_ansible_redhat() {
     echo "${pymsg_006}"
     yum install -y python3-pip dialog gettext ${containerd}
-    pip3 install ansible
     python3 -m pip install --upgrade pip
+    pip3 install ansible ${python_podman}
     echo "${pymsg_007}"
 }
 
@@ -88,8 +89,8 @@ install_ansible_redhat() {
 install_ansible_macos() {
     echo "${pymsg_008}"
     brew install dialog gettext ${containerd}
-    pip3 install ansible
     python3 -m pip install --upgrade pip
+    pip3 install ansible ${python_podman}
     echo "${pymsg_009}"
 }
 
@@ -97,8 +98,8 @@ install_ansible_macos() {
 install_ansible_arch() {
     echo "${pymsg_010}"
     pacman -Sy --noconfirm python-pip dialog gettext ${containerd}
-    pip install ansible
     python3 -m pip install --upgrade pip
+    pip install ansible ${python_podman}
     echo "${pymsg_011}"
 }
 
@@ -106,7 +107,7 @@ install_ansible_arch() {
 install_ansible_bsd() {
     echo "${pymsg_012}"
     pkg install -y py38-pip dialog gettext ${containerd}
-    pip3 install ansible
     python3 -m pip install --upgrade pip
+    pip3 install ansible ${python_podman}
     echo "${pymsg_013}"
 }
